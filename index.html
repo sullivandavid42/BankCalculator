@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur de Prêt Immobilier</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            max-width: 600px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .result {
+            font-size: 18px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Calculateur de Prêt Immobilier</h2>
+    
+    <label>Prix du bien (€) :</label>
+    <input type="number" id="housePrice" value="260000">
+
+    <label>Frais de notaire (%) :</label>
+    <input type="number" id="notaryFees" value="8">
+
+    <label>Apport personnel (€) :</label>
+    <input type="number" id="apport" value="10000">
+
+    <label>Taux d'intérêt annuel (%) :</label>
+    <input type="number" id="interestRate" value="4">
+
+    <label>Durée du prêt (années) :</label>
+    <input type="number" id="loanDuration" value="25">
+
+    <label>Revenus du foyer (€ / mois) :</label>
+    <input type="number" id="income" value="4900">
+
+    <label>Taux d'endettement max (%) :</label>
+    <input type="number" id="debtRatio" value="35">
+
+    <button onclick="calculateLoan()">Calculer</button>
+
+    <div class="result" id="monthlyPaymentResult"></div>
+    <div class="result" id="maxMonthlyPaymentResult"></div>
+    <div class="result" id="maxLoanResult"></div>
+</div>
+
+<script>
+function calculateLoan() {
+    // Récupération des valeurs du formulaire
+    let housePrice = parseFloat(document.getElementById("housePrice").value);
+    let notaryFees = parseFloat(document.getElementById("notaryFees").value) / 100;
+    let apport = parseFloat(document.getElementById("apport").value);
+    let interestRate = parseFloat(document.getElementById("interestRate").value) / 100;
+    let loanDuration = parseFloat(document.getElementById("loanDuration").value);
+    let income = parseFloat(document.getElementById("income").value);
+    let debtRatio = parseFloat(document.getElementById("debtRatio").value) / 100;
+
+    // Calcul des frais de notaire et montant total à financer
+    let notaryCost = housePrice * notaryFees;
+    let totalCost = housePrice + notaryCost;
+    let loanAmount = totalCost - apport;
+
+    // Taux mensuel et nombre de paiements
+    let monthlyRate = interestRate / 12;
+    let totalPayments = loanDuration * 12;
+
+    // Calcul de la mensualité du prêt (formule d'annuité)
+    let monthlyPayment = loanAmount * (monthlyRate / (1 - Math.pow(1 + monthlyRate, -totalPayments)));
+
+    // Calcul de la mensualité maximale autorisée
+    let maxMonthlyPayment = income * debtRatio;
+
+    // Calcul du prêt maximum basé sur le taux d'endettement
+    let maxLoanAmount = maxMonthlyPayment * (1 - Math.pow(1 + monthlyRate, -totalPayments)) / monthlyRate;
+
+    // Affichage des résultats
+    document.getElementById("monthlyPaymentResult").innerHTML = 
+        `Mensualité estimée : <strong>${monthlyPayment.toFixed(2)} €</strong>`;
+    
+    document.getElementById("maxMonthlyPaymentResult").innerHTML = 
+        `Mensualité maximale autorisée : <strong>${maxMonthlyPayment.toFixed(2)} €</strong>`;
+
+    document.getElementById("maxLoanResult").innerHTML = 
+        `Montant maximum empruntable : <strong>${maxLoanAmount.toFixed(2)} €</strong>`;
+}
+</script>
+
+</body>
+</html>
